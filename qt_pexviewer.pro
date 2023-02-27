@@ -29,6 +29,7 @@ HEADERS += \
     formmap.h \
     formtop.h \
     mainwindow.h \
+    mainwindow.h \
     trianglerenderer.h
 
 FORMS += \
@@ -37,6 +38,7 @@ FORMS += \
     formlayer.ui \
     formmap.ui \
     formtop.ui \
+    mainwindow.ui \
     mainwindow.ui
 
 # Default rules for deployment.
@@ -46,6 +48,3 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     Resources.qrc
-    
-    
-file name : qt_pexviewer

@@ -13,17 +13,19 @@ FormLayer::FormLayer(QWidget *parent) :
 
     ui->tableWidget->setColumnCount(5);
     ui->tableWidget->setRowCount(10);
-    ui->tableWidget->setColumnWidth(0,12);
-    ui->tableWidget->setColumnWidth(1,80);
-    ui->tableWidget->setColumnWidth(2,80);
+//    ui->tableWidget->setColumnWidth(0,12);
+//    ui->tableWidget->setColumnWidth(1,80);
+//    ui->tableWidget->setColumnWidth(2,80);
     ui->tableWidget->setHorizontalHeaderLabels(defalutTableHeader);
     ui->tableWidget->horizontalHeader()->setStyleSheet("QHeaderView::section {background-color:#404040;color:#FFFFFF;}");
 
     QHeaderView *header = ui->tableWidget->horizontalHeader();
     header->setSectionResizeMode(QHeaderView::Stretch);
+//    header->setDefaultAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 
     QCheckBox *HeadercheckBoxItem = new QCheckBox(header);
     HeadercheckBoxItem->setCheckState(Qt::Checked);
+
 //    header->setC
 
 //    QWidget *HeadercheckboxWidget = new QWidget();
@@ -119,7 +121,7 @@ void FormLayer::ReceiveSplitData(int row, int column, const QVector <QVector <QS
         QObject::connect(colorbutton, SIGNAL(clicked()), this, SLOT(on_colorbutton_clicked()));
     }
     ui->tableWidget->setHorizontalHeaderLabels(vectorTOqstringlistHoriLabels);
-//    ui->tableWidget->resizeColumnsToContents();
+    ui->tableWidget->resizeColumnsToContents();
 
 }
 
