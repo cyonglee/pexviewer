@@ -16,31 +16,17 @@ FormMap::FormMap(QWidget *parent) :
 
 }
 
-void FormMap::receiveFile(QVector<QStringList> strVector)
+void FormMap::receiveSize(float &xMinSize,float &yMinSize,float &xMaxSize,float &yMaxSize, float &zoomScale)
 {
-    float minX=0, maxX=0, minY=0, maxY=0, scale=1;
+    float scale=1;
 
-    for (auto &data : strVector)
-    {
-        if(data.size() == 8)
-        {
-            float x1 = data[2].toFloat();
-            float y1 = data[3].toFloat();
-            float x2 = data[4].toFloat();
-            float y2 = data[5].toFloat();
-
-            if (x1<minX){minX = x1;}
-            if (x2>maxX){maxX = x2;}
-            if (y1<minY){minY = y1;}
-            if (y2>maxY){maxY = y2;}
-        }
-    }
-    width = maxX-minX;
-    height = maxY-minY;
+    width = xMaxSize-xMinSize;
+    height = yMaxSize-yMinSize;
     qDebug() << "scale : " << scale << "| width : " << width << "| height : " << height;
     scale = 178/std::max(width,height);
     width = scale * width;
     height = scale * height;
+//    float rectScale = 176*zoomScale; 추후 변경
 
     qDebug() << "scale : " << scale << "| width : " << width << "| height : " << height;
 
