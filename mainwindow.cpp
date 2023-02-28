@@ -16,7 +16,7 @@
 #include <QIODevice>
 #include <QTextStream>
 
-MainWindow::MainWindow(VulkanWindow *w, QVector<QStringList> strVector)
+MainWindow::MainWindow(VulkanWindow *w)
     : m_window(w)
     , ui(new Ui::MainWindow)
 {
@@ -42,16 +42,14 @@ MainWindow::MainWindow(VulkanWindow *w, QVector<QStringList> strVector)
     dockMap->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     dockMap->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     addDockWidget(Qt::LeftDockWidgetArea, dockMap);
-    formMap = new FormMap;
-    formMap->receiveFile(strVector);
+    formMap = new FormMap;    
     dockMap->setWidget(formMap);
 
     QDockWidget *dockTop = new QDockWidget(tr("Topview"), this);
     dockTop->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     dockTop->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     addDockWidget(Qt::LeftDockWidgetArea, dockTop);
-    formTop = new FormTop;
-    formTop->receiveFile(strVector);
+    formTop = new FormTop;    
     dockTop->setWidget(formTop);
 
     QDockWidget *dockInfo = new QDockWidget(tr("Info"), this);
@@ -66,6 +64,8 @@ MainWindow::MainWindow(VulkanWindow *w, QVector<QStringList> strVector)
 
     input_dataS = new all_data;
 
+
+    /// connect ////////////////////
     QObject::connect(ui->actionOpen_file, SIGNAL(triggered()), this, SLOT(on_actionOpen_file_triggered));
     QObject::connect(this, SIGNAL(sendSelectFileName(QString)), input_dataS, SLOT(receiveSelectFileName(QString)));
     QObject::connect(input_dataS, SIGNAL(sendSplitData(int, int, const QVector <QVector <QString>> &)), formHier, SLOT(ReceiveSplitData(int, int, const QVector <QVector <QString>> &)));
@@ -289,8 +289,43 @@ void MainWindow::on_actionOpen_Map_File_triggered()
                                                         tr("text (*.txt)")
                                                         );
     FileDb *fileDb = new FileDb;
-    QVector<QVector<QVector<QList<float>>>> mapFile;
-    mapFile = fileDb->openFile(fileNameInfo);
+    QVector<QList<float>> vecList;
+    float xMinSize = 0, yMinSize = 0, xMaxSize = 0, yMaxSize = 0;
+    fileDb->openFile(fileNameInfo, vecList , xMinSize, yMinSize, xMaxSize, yMaxSize);
+
+    int posScale = 1000, splitSize = 10; //posScale 이 1이면 um 단위, posScale 이 1000이면 nm 단위
+    int n = (int(xMaxSize *posScale)-int(xMinSize *posScale))/splitSize +1;
+    int m = (int(yMaxSize *posScale)-int(yMinSize *posScale))/splitSize +1;
+    qDebug() << "int n / int m : " << n << " , " <<m;
+
+    ////////////////////////////////////////////////
+    QVector<QVector<QVector<QList<float>>>> mapFile(n, QVector<QVector<QList<float>>>(m, {{}}));
+//    QVector<QList<float>> mapFile[n][m];
+    // 구조 변경에 대해 생각할 필요 있음
+    // 주형 구조 : struct(layer, r, g, b, z, thk, opacity, vector())
+
+    mapFile[0][0][0].append({0, 0, xMinSize, yMinSize, xMaxSize, yMaxSize, 0, 0});
+
+    for (auto & data : vecList)
+    {
+        if(data.size() == 8)
+        {
+            qDebug() << " " << data[2] << " "<< int(data[2]*100) << " "<< data[3] << " "<< int(data[3]*100);
+            int in_n = 0, in_m = 0;
+            if(data[2]<0)
+            {in_n = n + int(data[2]*100)-1;}
+            else
+            {in_n = int(data[2]*100);}
+            if(data[3]<0)
+            {in_m = m + int(data[3]*100)-1;}
+            else
+            {in_m = int(data[3]*100);}
+            mapFile[in_n][in_m].append(data);
+        }
+    }
+
+
+
     for(int i = 0 ; i < (int(mapFile[0][0][0][2]*1000)-int(mapFile[0][0][0][0]*1000))/10+1 ; i++)
     {
         QDebug oneLine = qDebug();
@@ -300,6 +335,10 @@ void MainWindow::on_actionOpen_Map_File_triggered()
         }
         qDebug() << "";
     }
+
+    float zoomScale = std::max(xMaxSize-xMinSize,yMaxSize-yMinSize)/10;
+    formMap->receiveSize(xMinSize,yMinSize,xMaxSize,yMaxSize,zoomScale);
+    formTop->receiveFile(mapFile);
 
 }
 
