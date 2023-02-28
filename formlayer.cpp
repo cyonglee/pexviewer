@@ -13,29 +13,36 @@ FormLayer::FormLayer(QWidget *parent) :
 
     ui->tableWidget->setColumnCount(5);
     ui->tableWidget->setRowCount(10);
-//    ui->tableWidget->setColumnWidth(0,12);
+    ui->tableWidget->setColumnWidth(0,15);
 //    ui->tableWidget->setColumnWidth(1,80);
 //    ui->tableWidget->setColumnWidth(2,80);
     ui->tableWidget->setHorizontalHeaderLabels(defalutTableHeader);
     ui->tableWidget->horizontalHeader()->setStyleSheet("QHeaderView::section {background-color:#404040;color:#FFFFFF;}");
 
-    QHeaderView *header = ui->tableWidget->horizontalHeader();
-    header->setSectionResizeMode(QHeaderView::Stretch);
-//    header->setDefaultAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 
-    QCheckBox *HeadercheckBoxItem = new QCheckBox(header);
-    HeadercheckBoxItem->setCheckState(Qt::Checked);
+//    QHeaderView *horizontalHeader = ui->tableWidget->horizontalHeader();
+//    QWidget *checkBoxWidget = new QWidget();
+//    QHBoxLayout *layoutCheckBox = new QHBoxLayout(checkBoxWidget);
+//    QCheckBox *checkBox = new QCheckBox();
 
-//    header->setC
+//    layoutCheckBox->addWidget(checkBox);
+//    layoutCheckBox->setAlignment(Qt::AlignCenter);
+//    layoutCheckBox->setContentsMargins(0,0,0,0);
+//    checkBoxWidget->setLayout(layoutCheckBox);
+//    QModelIndex checkboxIndex = ui->tableWidget->model()->index(0,0,QModelIndex());
 
-//    QWidget *HeadercheckboxWidget = new QWidget();
-//    QHBoxLayout *checkboxLayout = new QHBoxLayout(HeadercheckboxWidget);
-//    checkboxLayout->addWidget(HeadercheckBoxItem);
-//    checkboxLayout->setAlignment(Qt::AlignCenter);
-//    checkboxLayout->setContentsMargins(0,0,0,0);
-//    HeadercheckboxWidget->setLayout(checkboxLayout);
-//    ui->tableWidget->setCellWidget(0,0,HeadercheckboxWidget);
+//    horizontalHeader->setIndexWidget(checkboxIndex, checkBoxWidget);
 
+
+    QHeaderView *horizontalHeader = ui->tableWidget->horizontalHeader();
+    QHBoxLayout *layoutCheckBox = new QHBoxLayout(horizontalHeader);
+    QCheckBox *HeaderCheckBox = new QCheckBox();
+    HeaderCheckBox->setCheckState(Qt::Checked);
+    layoutCheckBox->addWidget(HeaderCheckBox);
+    layoutCheckBox->setContentsMargins(11,0,0,0);
+    ui->tableWidget->setHorizontalHeader(horizontalHeader);
+
+    QObject::connect(HeaderCheckBox, SIGNAL(stateChanged(int)), this, SLOT(tableWidget_checkBoxChanged()));
 
 }
 
@@ -64,7 +71,7 @@ void FormLayer::ReceiveSplitData(int row, int column, const QVector <QVector <QS
     vectorTOqstringlistHoriLabels << " ";
 
 // QTableWidget 크기 설정
-    ui->tableWidget->setColumnCount(column-1);
+    ui->tableWidget->setColumnCount(column-2);
     ui->tableWidget->setRowCount(row-1);
 
 // Table Header Font size/bold change
@@ -77,21 +84,14 @@ void FormLayer::ReceiveSplitData(int row, int column, const QVector <QVector <QS
     for (int i=0; i<row ; i++)
     {
         // table value 채우기
-        for (int j=0; j<(column-3) ; j++)
+        for (int j=0; j<(column-4) ; j++)
         {
             vectorTOqstringlist << inputDataVector.value(i+1).value(j);
 //            vectorTOqstringlistHoriLabels << inputDataVector.value(0).value(j+1);
-            ui->tableWidget->setItem(i,j+2,new QTableWidgetItem(vectorTOqstringlist[i*(column-3)+j]));
+            ui->tableWidget->setItem(i,j+2,new QTableWidgetItem(vectorTOqstringlist[i*(column-4)+j]));
         }
 
         // checkbox 채우기
-//        QTableWidgetItem *checkBoxItem = new QTableWidgetItem();
-//        checkBoxItem->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
-//        checkBoxItem->setCheckState(Qt::Checked);
-//        ui->tableWidget->setItem(i,0,checkBoxItem);
-//        ui->tableWidget->setFocusPolicy(Qt::NoFocus);
-
-
         QCheckBox *checkBoxItem = new QCheckBox();
         checkBoxItem->setCheckState(Qt::Checked);
         QWidget *checkboxWidget = new QWidget();
@@ -122,6 +122,7 @@ void FormLayer::ReceiveSplitData(int row, int column, const QVector <QVector <QS
     }
     ui->tableWidget->setHorizontalHeaderLabels(vectorTOqstringlistHoriLabels);
     ui->tableWidget->resizeColumnsToContents();
+    ui->tableWidget->setColumnWidth(0,15);
 
 }
 
@@ -152,6 +153,20 @@ void FormLayer::tableWidget_checkBoxChanged()
 
     if (checkboxrow == -1) {
         qDebug() << "Failed to find row and column for checkbox.";
+
+        if (checkboxInTable->isChecked()) {
+            for (int i = 0; i < ui->tableWidget->rowCount(); i++) {
+                QWidget *widget = ui->tableWidget->cellWidget(i, 0);
+                QCheckBox *checkbox = widget->findChild<QCheckBox*>();
+                checkbox->setCheckState(Qt::Checked);
+            }
+        } else {
+                for (int i = 0; i < ui->tableWidget->rowCount(); i++) {
+                    QWidget *widget = ui->tableWidget->cellWidget(i, 0);
+                    QCheckBox *checkbox = widget->findChild<QCheckBox*>();
+                    checkbox->setCheckState(Qt::Unchecked);
+                }
+            }
         return;
     }
 
@@ -170,6 +185,7 @@ void FormLayer::tableWidget_checkBoxChanged()
         emit outputLayerStatus(printLayer);
         qDebug() << "Checkbox at row" << checkboxrow << "is unchecked.";
     }
+
 
 }
 
@@ -217,4 +233,3 @@ void FormLayer::on_colorbutton_clicked()
     ui->tableWidget->cellWidget(colorbuttonRow,1)->setStyleSheet(LayerColorText);
 
 }
-
