@@ -32,37 +32,7 @@ int main(int argc, char *argv[])
     VulkanWindow *vulkanWindow = new VulkanWindow;
     vulkanWindow->setVulkanInstance(&inst);
 
-    ////////////////////////////////////
-    std::ifstream readFile("C:/netlistLayout.txt");
-    QVector<QStringList> strVector;
-    QString qstr;
-    if (readFile.is_open())
-    {
-        int i = 0;
-        while(!readFile.eof())
-        {
-            std::string str;
-            getline(readFile, str);
-            qstr = QString::fromStdString(str);
-            QStringList listStr = qstr.split(",");
-            strVector.insert(i, listStr);
-            i++;
- //           qDebug() << "qDebug : "<<qstr << "[ " << i << " ]";
-        }
-        readFile.close();
-    }
-    FormTop formTop;
-    formTop.receiveFile(strVector);
-
-//    for (int j = 0; j < 32; j++)
-//    {
-//        qDebug() << "count : "<< j << " | len : " << strVector[j].size();
-//        qDebug() << strVector[j];
-//    }
-    //////////////////////////////////////
-
-
-    MainWindow mainWindow(vulkanWindow, strVector);
+    MainWindow mainWindow(vulkanWindow);
     QObject::connect(vulkanWindow, &VulkanWindow::signalInfoText, &mainWindow, &MainWindow::slotInfoText);
 
     QRect size = mainWindow.geometry();
