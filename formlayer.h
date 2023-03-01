@@ -9,6 +9,7 @@
 #include <QTableWidgetItem>
 #include <QCheckBox>
 #include <QPushButton>
+#include <QtWidgets/QSlider>
 #include <QDebug>
 
 
