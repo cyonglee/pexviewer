@@ -18,8 +18,8 @@
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
       <widget class="QTableWidget" name="tableWidget">
-       <property name="editTriggers">
-        <set>QAbstractItemView::NoEditTriggers</set>
+       <property name="focusPolicy">
+        <enum>Qt::ClickFocus</enum>
        </property>
        <property name="alternatingRowColors">
         <bool>true</bool>
