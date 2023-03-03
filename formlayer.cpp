@@ -62,6 +62,9 @@ void FormLayer::ReceiveSplitData(int row, int column, const QVector <QVector <QS
 // QTableWidget 크기 설정
     ui->tableWidget->setColumnCount(6);
     ui->tableWidget->setRowCount(row-1);
+    ui->tableWidget->setItemDelegateForColumn(5,new SliderDelegate);
+    ui->tableWidget->setColumnWidth(5,150);
+
 
 // Table Header Font size/bold change
     QFont font = ui->tableWidget->horizontalHeader()->font();
@@ -69,17 +72,23 @@ void FormLayer::ReceiveSplitData(int row, int column, const QVector <QVector <QS
     font.setPointSize(10);
     ui->tableWidget->horizontalHeader()->setFont(font);
 
-    QSlider *OpacitySlider = new QSlider();
-    QWidget *OpacitySliderWidget = new QWidget;
-    QHBoxLayout *OpacitySliderLayout = new QHBoxLayout(OpacitySliderWidget);
-    OpacitySliderLayout->addWidget(OpacitySlider);
-    OpacitySliderWidget->setLayout(OpacitySliderLayout);
 
-    ui->tableWidget->setCellWidget(1,6,OpacitySliderWidget);
+
 
 // Table 채우기
     for (int i=0; i<row ; i++)
     {
+        // Opacity 채우기
+//        QSlider *OpacitySlider = new QSlider(Qt::Horizontal);
+//        OpacitySlider->setRange(0,100);
+//        OpacitySlider->setGeometry(0,0,50,50);
+//        OpacitySlider->setFocusPolicy(Qt::StrongFocus);
+//        OpacitySlider->setTickPosition(QSlider::TicksBothSides);
+//        OpacitySlider->setTickInterval(10);
+//        QItemDelegate *temp = new QItemDelegate();
+
+
+
         // table value 채우기
         for (int j=0; j<(column-4) ; j++)
         {
@@ -123,7 +132,25 @@ void FormLayer::ReceiveSplitData(int row, int column, const QVector <QVector <QS
     ui->tableWidget->setHorizontalHeaderLabels(vectorTOqstringlistHoriLabels);
     ui->tableWidget->resizeColumnsToContents();
     ui->tableWidget->setColumnWidth(0,15);
+
+
+
+    // Opacity 추가
+//    QSlider *OpacitySlider = new QSlider(Qt::Horizontal);
+//    OpacitySlider->setRange(0,100);
+//    OpacitySlider->setGeometry(option.rect);
+//    QWidget *OpacitySliderWidget = new QWidget();
+//    QHBoxLayout *OpacitySliderLayout = new QHBoxLayout(OpacitySliderWidget);
+//    OpacitySliderLayout->addWidget(OpacitySlider);
+//    OpacitySliderWidget->setLayout(OpacitySliderLayout);
+
+//    ui->tableWidget->setCellWidget(1,6,OpacitySliderWidget);
+//    ui->tableWidget->setItemDelegate()
+
+
 }
+
+
 
 
 
