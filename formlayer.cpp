@@ -62,7 +62,7 @@ void FormLayer::ReceiveSplitData(int row, int column, const QVector <QVector <QS
 // QTableWidget 크기 설정
     ui->tableWidget->setColumnCount(6);
     ui->tableWidget->setRowCount(row-1);
-    ui->tableWidget->setItemDelegateForColumn(5,new SliderDelegate);
+//    ui->tableWidget->setItemDelegateForColumn(5,new SliderDelegate);
     ui->tableWidget->setColumnWidth(5,150);
 
 
@@ -72,22 +72,22 @@ void FormLayer::ReceiveSplitData(int row, int column, const QVector <QVector <QS
     font.setPointSize(10);
     ui->tableWidget->horizontalHeader()->setFont(font);
 
-
+    //QSlider *slider = new QSlider(Qt::Horizontal);
+    //slider->setRange(0, 100);
+    //ui->tableWidget->setCellWidget(1, 5, slider);
 
 
 // Table 채우기
     for (int i=0; i<row ; i++)
     {
-        // Opacity 채우기
-//        QSlider *OpacitySlider = new QSlider(Qt::Horizontal);
-//        OpacitySlider->setRange(0,100);
-//        OpacitySlider->setGeometry(0,0,50,50);
-//        OpacitySlider->setFocusPolicy(Qt::StrongFocus);
+        //Opacity 채우기
+        QSlider *OpacitySlider = new QSlider(Qt::Horizontal);
+        OpacitySlider->setRange(0,100);
+        OpacitySlider->setFocusPolicy(Qt::StrongFocus);
 //        OpacitySlider->setTickPosition(QSlider::TicksBothSides);
 //        OpacitySlider->setTickInterval(10);
-//        QItemDelegate *temp = new QItemDelegate();
-
-
+        ui->tableWidget->setCellWidget(i, 5, OpacitySlider);
+        QObject::connect(OpacitySlider, SIGNAL(valueChanged(int)), this, SLOT(handleOpacitySlider(int)));
 
         // table value 채우기
         for (int j=0; j<(column-4) ; j++)
@@ -232,3 +232,25 @@ void FormLayer::on_colorbutton_clicked()
 
     ui->tableWidget->cellWidget(colorbuttonRow,1)->setStyleSheet(LayerColorText);
 }
+
+void FormLayer::handleOpacitySlider(int Opacity)
+{
+
+    int temprow=0;
+    QSlider *OpacityInTalbe = qobject_cast<QSlider*>(sender());
+    for (int i = 0; i < ui->tableWidget->rowCount(); i++) {
+        QWidget *widget = ui->tableWidget->cellWidget(i, 0);
+        QSlider *Opacityslider = widget->findChild<QSlider*>();
+        if (Opacityslider == OpacityInTalbe) {
+            temprow = i;
+            Opacityslider->setValue(Opacity);
+            qDebug() << "Opacity = " << Opacity;
+            break;
+        }
+    }
+
+    //        slider->setValue(value);
+    //        qDebug() << slider;
+}
+
+
