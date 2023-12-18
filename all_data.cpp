@@ -10,6 +10,11 @@ all_data::all_data(QObject *parent) :
 
 }
 /////////////
+
+//////
+
+
+
 all_data::~all_data()
 {
 
